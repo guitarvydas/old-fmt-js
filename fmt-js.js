@@ -58,6 +58,9 @@ Param =
 }
 `;
 
+function extractFormals (s) {
+    return s.replace (/var.*= /g,'').replace (/\._.*$/g,', ');
+}
 
 var varNameStack = [];
 
@@ -101,7 +104,7 @@ var name = _name._glue ();
 var lb = _lb._glue ();
 var Params = _Params._glue ().join ('');
 var rb = _rb._glue ();
-var _result = `${name}: function () {\n_ruleEnter ("${name}");${setRuleName (name)}${Params}
+var _result = `${name}: function (${extractFormals (Params)}) {\n_ruleEnter ("${name}");${setRuleName (name)}${Params}
 `; 
 _ruleExit ("RuleLHS");
 return _result; 
