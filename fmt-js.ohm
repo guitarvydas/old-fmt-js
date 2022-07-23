@@ -1,0 +1,40 @@
+SemanticsSCL {
+  semantics = ws* semanticsStatement+
+  semanticsStatement = ruleName ws* "[" ws* parameters "]" ws* "=" ws* code? rewrites ws*
+
+  ruleName = letter1 letterRest*
+  
+  parameters = parameter*
+  parameter = treeparameter | flatparameter
+  flatparameter = fpws | fpd
+  fpws = pname ws+
+  fpd = pname delimiter
+  treeparameter = "@" tflatparameter
+  tflatparameter = tfpws | tfpd
+  tfpws = pname ws+
+  tfpd = pname delimiter
+
+  pname = letterRest letterRest*
+  rewrites = rw1 | rw2
+  rw1 = "[[" ws* code? rwstringWithNewlines "]]" ws*
+  rw2 = rwstring
+
+  letter1 = "_" | "a" .. "z" | "A" .. "Z"
+  letterRest = "0" .. "9" | letter1
+
+  comment = "%%" notEol* eol
+  notEol = ~eol any
+  
+  eol = "\n"
+  ws = comment | eol | " " | "\t" | "," 
+  delimiter = &"]" | &"="
+
+  rwstring = stringchar*
+  stringchar = ~"\n" any
+
+  rwstringWithNewlines = nlstringchar*
+   nlstringchar = ~"]]" ~"}}" any
+  code = "{{" ws* codeString "}}" ws* 
+  codeString = rwstringWithNewlines
+
+}
