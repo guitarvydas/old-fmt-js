@@ -20,9 +20,9 @@ function fmtjs (fmtsrc, fixup) {
     // Step 1b. Transpile User's FMT spec to a JS object (for use with Ohm-JS)
     try {
         var sem = internalgrammar.createSemantics ();
-        sem.addOperation ('_fmt', fmtSemantics);
+        sem.addOperation ('_glue', fmtSemantics);
         var generatedFmtWalker = sem (fmtcst);
-        var generated = generatedFmtWalker._fmt ();
+        var generated = generatedFmtWalker._glue ();
         var generatedFmtCodeString = fixup (generated);
 	return [true, generatedFmtCodeString];
     } catch (err) {
@@ -36,45 +36,25 @@ var traceDepth;
 
 const fmtGrammar =
       String.raw`
-SemanticsSCL {
-  semantics = ws* semanticsStatement+
-  semanticsStatement = ruleName ws* "[" ws* parameters "]" ws* "=" ws* code? rewrites ws*
-
-  ruleName = letter1 letterRest*
-  
-  parameters = parameter*
-  parameter = treeparameter | flatparameter
-  flatparameter = fpws | fpd
-  fpws = pname ws+
-  fpd = pname delimiter
-  treeparameter = "@" tflatparameter
-  tflatparameter = tfpws | tfpd
-  tfpws = pname ws+
-  tfpd = pname delimiter
-
-  pname = letterRest letterRest*
-  rewrites = rw1 | rw2
-  rw1 = "[[" ws* code? rwstringWithNewlines "]]" ws*
-  rw2 = rwstring
-
-  letter1 = "_" | "a" .. "z" | "A" .. "Z"
-  letterRest = "0" .. "9" | letter1
-
-  comment = "%%" notEol* eol
-  notEol = ~eol any
-  
-  eol = "\n"
-  ws = comment | eol | " " | "\t" | "," 
-  delimiter = &"]" | &"="
-
-  rwstring = stringchar*
-  stringchar = ~"\n" any
-
-  rwstringWithNewlines = nlstringchar*
-   nlstringchar = ~"]]" ~"}}" any
-  code = "{{" ws* codeString "}}" ws* 
-  codeString = rwstringWithNewlines
-
+FMT {
+top = rule+ spaces
+rule = applySyntactic<RuleLHS> spaces "=" spaces rewriteString
+RuleLHS = name "[" Param+ "]"
+rewriteString =
+  | stringBegin char* stringEnd
+stringBegin = "‛" | "[["
+stringEnd = "’" | "]]"
+char =
+  | "«" name "»" -- eval
+  | "$" name     -- evalShorthand
+  | ~"’" ~"]]" any     -- raw
+name = letter nameRest*
+nameRest = "_" | alnum
+Param =
+  | name "+" -- plus
+  | name "*" -- star
+  | name "?" -- opt
+  | name     -- flat
 }
 `;
 
@@ -82,102 +62,161 @@ SemanticsSCL {
 var varNameStack = [];
 
 
-var fmtSemantics = {   
-    semantics: function (_1s, _2s) { 
-        var __1s = _1s._fmt ().join (''); 
-        var __2s = _2s._fmt ().join (''); 
-        return `
-const semObject = {
-${__2s}
-_terminal: function () { return this.sourceString; },
-_iter: function (...children) { return children.map(c => c._fmt ()); }
-}}`; 
+const fmtSemantics = {   
+    top : function (_rule,_ws) { 
+	_ruleEnter ("top");
+
+	var rule = _rule._glue ().join ('');
+	var ws = _ws._glue ();
+	var _result = `${rule}${ws}`; 
+	_ruleExit ("top");
+	return _result; 
     },
-    semanticsStatement: function (_1, _2s, _3, _4s, _5, _6, _7s, _8, _9s, _10s, _11, _12s) {
-        varNameStack = [];
-        var __1 = _1._fmt ();
-        var __2s = _2s._fmt ().join ('');
-        var __3 = _3._fmt ();
-        var __4s = _4s._fmt ().join ('');
-        var __5 = _5._fmt ();
-        var __6 = _6._fmt ();
-        var __7s = _7s._fmt ().join ('');
-        var __8 = _8._fmt ();
-        var __9s = _9s._fmt ().join ('');
-        var __10s = _10s._fmt ().join ('');
-        var __11 = _11._fmt ();
-        var __12s = _12s._fmt ().join ('');
-        return `
-${__1} : function (${__5}) { 
-_ruleEnter ("${__1}");
-${__10s}
-${varNameStack.join ('\n')}
-var _result = \`${__11}\`; 
-_ruleExit ("${__1}");
-return _result; 
-},
-            `;
-    },
-    ruleName: function (_1, _2s) { var __1 = _1._fmt (); var __2s = _2s._fmt ().join (''); return __1 + __2s; },
-    parameters: function (_1s) {  var __1s = _1s._fmt ().join (','); return __1s; },
     
-    parameter: function (_1) { 
-        var __1 = _1._fmt ();
-        return `${__1}`;
+    rule : function (_lhs,_ws1,_keq,_ws2,_rws) { 
+	_ruleEnter ("rule");
+
+	var lhs = _lhs._glue ();
+	var ws1 = _ws1._glue ();
+	var keq = _keq._glue ();
+	var ws2 = _ws2._glue ();
+	var rws = _rws._glue ();
+	var _result = `${lhs}${ws1}${keq}${ws2}${rws}`; 
+	_ruleExit ("rule");
+	return _result; 
     },
-    flatparameter: function (_1) { 
-        var __1 = _1._fmt (); 
-        varNameStack.push (`var ${__1} = _${__1}._fmt ();`);
-        return `_${__1}`;
-    },
-    fpws: function (_1, _2s) { var __1 = _1._fmt (); var __2s = _2s._fmt ().join (''); return __1; },
-    fpd: function (_1, _2) { var __1 = _1._fmt (); var __2 = _2._fmt (); return __1; },
     
-    treeparameter: function (_1, _2) { 
-        var __1 = _1._fmt (); 
-        var __2 = _2._fmt (); 
-        varNameStack.push (`var ${__2} = _${__2}._fmt ().join ('');`);
-        return `_${__2}`; 
+    RuleLHS : function (_name,_lb,_Params,_rb) { 
+	_ruleEnter ("RuleLHS");
+
+	var name = _name._glue ();
+	var lb = _lb._glue ();
+	var Params = _Params._glue ().join ('');
+	var rb = _rb._glue ();
+	var _result = `${name}${lb}${Params}${rb}`; 
+	_ruleExit ("RuleLHS");
+	return _result; 
     },
-    tflatparameter: function (_1) { 
-        var __1 = _1._fmt (); 
-        return `${__1}`;
+    
+    rewriteString : function (_sb,_cs,_se) { 
+	_ruleEnter ("rewriteString");
+
+	var sb = _sb._glue ();
+	var cs = _cs._glue ().join ('');
+	var se = _se._glue ();
+	var _result = `${sb}${cs}${se}`; 
+	_ruleExit ("rewriteString");
+	return _result; 
     },
-    tfpws: function (_1, _2s) { var __1 = _1._fmt (); var __2s = _2s._fmt ().join (''); return __1; },
-    tfpd: function (_1, _2) { var __1 = _1._fmt (); var __2 = _2._fmt (); return __1; },
+    
+    stringBegin : function (_c) { 
+	_ruleEnter ("stringBegin");
 
-    pname: function (_1, _2s) { var __1 = _1._fmt (); var __2s = _2s._fmt ().join (''); return __1 + __2s;},
-    rewrites: function (_1) { var __1 = _1._fmt (); return __1; },
-    rw1: function (_1, _2s, codeQ, _3, _4, _5s) {
-        var __2 = _2s._fmt ().join ('');
-        var code = codeQ._fmt ();
-        var __3 = _3._fmt ();
-        if (0 === code.length) {
-            return `${__2}${__3}`;
-        } else {
-            process.stderr.write ('code is NOT empty\n');
-            throw "code in rw1 NIY";
-            return `${code}${__3}`;
-        }
+	var c = _c._glue ();
+	var _result = `${c}`; 
+	_ruleExit ("stringBegin");
+	return _result; 
     },
-    rw2: function (_1) { var __1 = _1._fmt (); return __1; },
-    letter1: function (_1) { var __1 = _1._fmt (); return __1; },
-    letterRest: function (_1) { var __1 = _1._fmt (); return __1; },
+    
+    stringEnd : function (_c) { 
+	_ruleEnter ("stringEnd");
 
-    ws: function (_1) { var __1 = _1._fmt (); return __1; },
-    delimiter: function (_1) { return ""; },
+	var c = _c._glue ();
+	var _result = `${c}`; 
+	_ruleExit ("stringEnd");
+	return _result; 
+    },
+    
+    char_eval : function (_lb,_name,_rb) { 
+	_ruleEnter ("char_eval");
 
-    rwstring: function (_1s) { var __1s = _1s._fmt ().join (''); return __1s; },
-    stringchar: function (_1) { var __1 = _1._fmt (); return __1; },
-    rwstringWithNewlines: function (_1s) { var __1s = _1s._fmt ().join (''); return __1s; },
-    nlstringchar: function (_1) { var __1 = _1._fmt (); return __1; },
+	var lb = _lb._glue ();
+	var name = _name._glue ();
+	var rb = _rb._glue ();
+	var _result = `${lb}${name}${rb}`; 
+	_ruleExit ("char_eval");
+	return _result; 
+    },
+    
+    char_evalShorthand : function (_k,_name) { 
+	_ruleEnter ("char_evalShorthand");
 
-    code: function (_1, _2s, _3, _4, _5s) { return _3._fmt (); },
-    codeString: function (_1) { return _1._fmt (); },
+	var k = _k._glue ();
+	var name = _name._glue ();
+	var _result = `${k}${name}`; 
+	_ruleExit ("char_evalShorthand");
+	return _result; 
+    },
+    
+    char_raw : function (_c) { 
+	_ruleEnter ("char_raw");
 
-    // Ohm v16 requires ...children, previous versions require no ...
-    _iter: function (...children) { return children.map(c => c._fmt ()); },
-    _terminal: function () { return this.sourceString; }
+	var c = _c._glue ();
+	var _result = `${c}`; 
+	_ruleExit ("char_raw");
+	return _result; 
+    },
+    
+    name : function (_c,_cs) { 
+	_ruleEnter ("name");
+
+	var c = _c._glue ();
+	var cs = _cs._glue ().join ('');
+	var _result = `${c}${cs}`; 
+	_ruleExit ("name");
+	return _result; 
+    },
+    
+    nameRest : function (_c) { 
+	_ruleEnter ("nameRest");
+
+	var c = _c._glue ();
+	var _result = `${c}`; 
+	_ruleExit ("nameRest");
+	return _result; 
+    },
+    
+    Param_plus : function (_name,_k) { 
+	_ruleEnter ("Param_plus");
+
+	var name = _name._glue ();
+	var k = _k._glue ();
+	var _result = `${name}${k}`; 
+	_ruleExit ("Param_plus");
+	return _result; 
+    },
+    
+    Param_star : function (_name,_k) { 
+	_ruleEnter ("Param_star");
+
+	var name = _name._glue ();
+	var k = _k._glue ();
+	var _result = `${name}${k}`; 
+	_ruleExit ("Param_star");
+	return _result; 
+    },
+    
+    Param_opt : function (_name,_k) { 
+	_ruleEnter ("Param_opt");
+
+	var name = _name._glue ();
+	var k = _k._glue ();
+	var _result = `${name}${k}`; 
+	_ruleExit ("Param_opt");
+	return _result; 
+    },
+    
+    Param_flat : function (_name) { 
+	_ruleEnter ("Param_flat");
+
+	var name = _name._glue ();
+	var _result = `${name}`; 
+	_ruleExit ("Param_flat");
+	return _result; 
+    },
+    
+    _terminal: function () { return this.sourceString; },
+    _iter: function (...children) { return children.map(c => c._glue ()); }
 };
 
 function _ruleInit () {
