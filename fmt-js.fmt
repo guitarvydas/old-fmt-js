@@ -1,15 +1,19 @@
 top [@rule ws] = [[${rule}${ws}]]
-rule [lhs ws1 keq ws2 rws] = [[${lhs}${ws1}${keq}${ws2}${rws}]]
-RuleLHS [name lb @Params rb] = [[${name}${lb}${Params}${rb}]]
+rule [lhs ws1 keq ws2 rws] = [[${lhs}${rws}
+_ruleExit ("${getRuleName ()}");
+}
+]]
+RuleLHS [name lb @Params rb] = [[${name}: function () {\n_ruleEnter ("${name}");${setRuleName (name)}${Params}
+]]
 rewriteString [sb @cs se] = [[${sb}${cs}${se}]]
 stringBegin [c] = [[${c}]]
 stringEnd [c] = [[${c}]]
-char_eval [lb name rb] = [[${lb}${name}${rb}]]
-char_evalShorthand [k name] = [[${k}${name}]]
+char_eval [lb name rb] = [[${name}]]
+char_evalShorthand [k name] = [[${name}]]
 char_raw [c] = [[${c}]]
 name [c @cs] = [[${c}${cs}]]
 nameRest [c] = [[${c}]]
-Param_plus [name k] = [[${name}${k}]]
-Param_star [name k] = [[${name}${k}]]
-Param_opt [name k] = [[${name}${k}]]
-Param_flat [name] = [[${name}]]
+Param_plus [name k] = [\nvar ${name} = _${name}._glue ().join ('')]]
+Param_star [name k] = [\nvar ${name} = _${name}._glue ().join ('')]]
+Param_opt [name k] = [\nvar ${name} = _${name}._glue ().join ('')]]
+Param_flat [name] = [[\nvar ${name} = _${name}._glue ();]]

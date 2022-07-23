@@ -83,7 +83,7 @@ var ws1 = _ws1._glue ();
 var keq = _keq._glue ();
 var ws2 = _ws2._glue ();
 var rws = _rws._glue ();
-var _result = `${lhs}${ws1}${keq}${ws2}${rws}
+var _result = `${lhs}${rws}
 _ruleExit ("${getRuleName ()}");
 }
 `; 
@@ -98,7 +98,7 @@ var name = _name._glue ();
 var lb = _lb._glue ();
 var Params = _Params._glue ().join ('');
 var rb = _rb._glue ();
-var _result = `${name}: function () {\n_ruleEnter ("${name}");${setRuleName (name)});
+var _result = `${name}: function () {\n_ruleEnter ("${name}");${setRuleName (name)}${Params}
 `; 
 _ruleExit ("RuleLHS");
 return _result; 
@@ -139,7 +139,7 @@ _ruleEnter ("char_eval");
 var lb = _lb._glue ();
 var name = _name._glue ();
 var rb = _rb._glue ();
-var _result = `${lb}${name}${rb}`; 
+var _result = `${name}`; 
 _ruleExit ("char_eval");
 return _result; 
 },
@@ -149,7 +149,7 @@ _ruleEnter ("char_evalShorthand");
 
 var k = _k._glue ();
 var name = _name._glue ();
-var _result = `${k}${name}`; 
+var _result = `${name}`; 
 _ruleExit ("char_evalShorthand");
 return _result; 
 },
