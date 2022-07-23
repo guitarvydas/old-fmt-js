@@ -11,7 +11,7 @@ function fmtjs (fmtsrc, fixup) {
     
 
     // Step 1a. Create (internal) fmt transpiler. 
-    var internalgrammar = ohm.grammar (glueGrammar);
+    var internalgrammar = ohm.grammar (fmtGrammar);
     var fmtcst = internalgrammar.match (fmtsrc);
 
     if (fmtcst.failed ()) {
@@ -20,9 +20,9 @@ function fmtjs (fmtsrc, fixup) {
     // Step 1b. Transpile User's FMT spec to a JS object (for use with Ohm-JS)
     try {
         var sem = internalgrammar.createSemantics ();
-        sem.addOperation ('_glue', glueSemantics);
+        sem.addOperation ('_fmt', fmtSemantics);
         var generatedFmtWalker = sem (fmtcst);
-        var generated = generatedFmtWalker._glue ();
+        var generated = generatedFmtWalker._fmt ();
         var generatedFmtCodeString = fixup (generated);
 	return [true, generatedFmtCodeString];
     } catch (err) {
@@ -34,7 +34,7 @@ function fmtjs (fmtsrc, fixup) {
 var tracing = false;
 var traceDepth;
 
-const glueGrammar =
+const fmtGrammar =
       String.raw`
 SemanticsSCL {
   semantics = ws* semanticsStatement+
@@ -82,31 +82,31 @@ SemanticsSCL {
 var varNameStack = [];
 
 
-var glueSemantics = {   
+var fmtSemantics = {   
     semantics: function (_1s, _2s) { 
-        var __1s = _1s._glue ().join (''); 
-        var __2s = _2s._glue ().join (''); 
+        var __1s = _1s._fmt ().join (''); 
+        var __2s = _2s._fmt ().join (''); 
         return `
 const semObject = {
 ${__2s}
 _terminal: function () { return this.sourceString; },
-_iter: function (...children) { return children.map(c => c._glue ()); }
+_iter: function (...children) { return children.map(c => c._fmt ()); }
 }}`; 
     },
     semanticsStatement: function (_1, _2s, _3, _4s, _5, _6, _7s, _8, _9s, _10s, _11, _12s) {
         varNameStack = [];
-        var __1 = _1._glue ();
-        var __2s = _2s._glue ().join ('');
-        var __3 = _3._glue ();
-        var __4s = _4s._glue ().join ('');
-        var __5 = _5._glue ();
-        var __6 = _6._glue ();
-        var __7s = _7s._glue ().join ('');
-        var __8 = _8._glue ();
-        var __9s = _9s._glue ().join ('');
-        var __10s = _10s._glue ().join ('');
-        var __11 = _11._glue ();
-        var __12s = _12s._glue ().join ('');
+        var __1 = _1._fmt ();
+        var __2s = _2s._fmt ().join ('');
+        var __3 = _3._fmt ();
+        var __4s = _4s._fmt ().join ('');
+        var __5 = _5._fmt ();
+        var __6 = _6._fmt ();
+        var __7s = _7s._fmt ().join ('');
+        var __8 = _8._fmt ();
+        var __9s = _9s._fmt ().join ('');
+        var __10s = _10s._fmt ().join ('');
+        var __11 = _11._fmt ();
+        var __12s = _12s._fmt ().join ('');
         return `
 ${__1} : function (${__5}) { 
 _ruleEnter ("${__1}");
@@ -118,40 +118,40 @@ return _result;
 },
             `;
     },
-    ruleName: function (_1, _2s) { var __1 = _1._glue (); var __2s = _2s._glue ().join (''); return __1 + __2s; },
-    parameters: function (_1s) {  var __1s = _1s._glue ().join (','); return __1s; },
+    ruleName: function (_1, _2s) { var __1 = _1._fmt (); var __2s = _2s._fmt ().join (''); return __1 + __2s; },
+    parameters: function (_1s) {  var __1s = _1s._fmt ().join (','); return __1s; },
     
     parameter: function (_1) { 
-        var __1 = _1._glue ();
+        var __1 = _1._fmt ();
         return `${__1}`;
     },
     flatparameter: function (_1) { 
-        var __1 = _1._glue (); 
-        varNameStack.push (`var ${__1} = _${__1}._glue ();`);
+        var __1 = _1._fmt (); 
+        varNameStack.push (`var ${__1} = _${__1}._fmt ();`);
         return `_${__1}`;
     },
-    fpws: function (_1, _2s) { var __1 = _1._glue (); var __2s = _2s._glue ().join (''); return __1; },
-    fpd: function (_1, _2) { var __1 = _1._glue (); var __2 = _2._glue (); return __1; },
+    fpws: function (_1, _2s) { var __1 = _1._fmt (); var __2s = _2s._fmt ().join (''); return __1; },
+    fpd: function (_1, _2) { var __1 = _1._fmt (); var __2 = _2._fmt (); return __1; },
     
     treeparameter: function (_1, _2) { 
-        var __1 = _1._glue (); 
-        var __2 = _2._glue (); 
-        varNameStack.push (`var ${__2} = _${__2}._glue ().join ('');`);
+        var __1 = _1._fmt (); 
+        var __2 = _2._fmt (); 
+        varNameStack.push (`var ${__2} = _${__2}._fmt ().join ('');`);
         return `_${__2}`; 
     },
     tflatparameter: function (_1) { 
-        var __1 = _1._glue (); 
+        var __1 = _1._fmt (); 
         return `${__1}`;
     },
-    tfpws: function (_1, _2s) { var __1 = _1._glue (); var __2s = _2s._glue ().join (''); return __1; },
-    tfpd: function (_1, _2) { var __1 = _1._glue (); var __2 = _2._glue (); return __1; },
+    tfpws: function (_1, _2s) { var __1 = _1._fmt (); var __2s = _2s._fmt ().join (''); return __1; },
+    tfpd: function (_1, _2) { var __1 = _1._fmt (); var __2 = _2._fmt (); return __1; },
 
-    pname: function (_1, _2s) { var __1 = _1._glue (); var __2s = _2s._glue ().join (''); return __1 + __2s;},
-    rewrites: function (_1) { var __1 = _1._glue (); return __1; },
+    pname: function (_1, _2s) { var __1 = _1._fmt (); var __2s = _2s._fmt ().join (''); return __1 + __2s;},
+    rewrites: function (_1) { var __1 = _1._fmt (); return __1; },
     rw1: function (_1, _2s, codeQ, _3, _4, _5s) {
-        var __2 = _2s._glue ().join ('');
-        var code = codeQ._glue ();
-        var __3 = _3._glue ();
+        var __2 = _2s._fmt ().join ('');
+        var code = codeQ._fmt ();
+        var __3 = _3._fmt ();
         if (0 === code.length) {
             return `${__2}${__3}`;
         } else {
@@ -160,23 +160,23 @@ return _result;
             return `${code}${__3}`;
         }
     },
-    rw2: function (_1) { var __1 = _1._glue (); return __1; },
-    letter1: function (_1) { var __1 = _1._glue (); return __1; },
-    letterRest: function (_1) { var __1 = _1._glue (); return __1; },
+    rw2: function (_1) { var __1 = _1._fmt (); return __1; },
+    letter1: function (_1) { var __1 = _1._fmt (); return __1; },
+    letterRest: function (_1) { var __1 = _1._fmt (); return __1; },
 
-    ws: function (_1) { var __1 = _1._glue (); return __1; },
+    ws: function (_1) { var __1 = _1._fmt (); return __1; },
     delimiter: function (_1) { return ""; },
 
-    rwstring: function (_1s) { var __1s = _1s._glue ().join (''); return __1s; },
-    stringchar: function (_1) { var __1 = _1._glue (); return __1; },
-    rwstringWithNewlines: function (_1s) { var __1s = _1s._glue ().join (''); return __1s; },
-    nlstringchar: function (_1) { var __1 = _1._glue (); return __1; },
+    rwstring: function (_1s) { var __1s = _1s._fmt ().join (''); return __1s; },
+    stringchar: function (_1) { var __1 = _1._fmt (); return __1; },
+    rwstringWithNewlines: function (_1s) { var __1s = _1s._fmt ().join (''); return __1s; },
+    nlstringchar: function (_1) { var __1 = _1._fmt (); return __1; },
 
-    code: function (_1, _2s, _3, _4, _5s) { return _3._glue (); },
-    codeString: function (_1) { return _1._glue (); },
+    code: function (_1, _2s, _3, _4, _5s) { return _3._fmt (); },
+    codeString: function (_1) { return _1._fmt (); },
 
     // Ohm v16 requires ...children, previous versions require no ...
-    _iter: function (...children) { return children.map(c => c._glue ()); },
+    _iter: function (...children) { return children.map(c => c._fmt ()); },
     _terminal: function () { return this.sourceString; }
 };
 
@@ -214,7 +214,7 @@ function _ruleExit (ruleName) {
     }
 }
 
-function getGlueGrammar () {
-    return glueGrammar;
+function getFmtGrammar () {
+    return fmtGrammar;
 }
 
