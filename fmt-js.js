@@ -61,9 +61,10 @@ Param =
 
 var varNameStack = [];
 
+// xxx
 
+const semObject = {
 
-const semObject = {   
 top : function (_rule,_ws) { 
 _ruleEnter ("top");
 
@@ -82,7 +83,10 @@ var ws1 = _ws1._glue ();
 var keq = _keq._glue ();
 var ws2 = _ws2._glue ();
 var rws = _rws._glue ();
-var _result = `${lhs}${ws1}${keq}${ws2}${rws}`; 
+var _result = `${lhs}${ws1}${keq}${ws2}${rws}
+_ruleExit ("${getRuleName ()}");
+}
+`; 
 _ruleExit ("rule");
 return _result; 
 },
@@ -94,8 +98,7 @@ var name = _name._glue ();
 var lb = _lb._glue ();
 var Params = _Params._glue ().join ('');
 var rb = _rb._glue ();
-var _result = `${name}: function () {\n_ruleEnter ("${name}");\n${lb}${Params}${rb}\n_ruleExit ("${name}");
-}
+var _result = `${name}: function () {\n_ruleEnter ("${name}");${setRuleName (name)});
 `; 
 _ruleExit ("RuleLHS");
 return _result; 
@@ -221,6 +224,7 @@ return _result;
 _terminal: function () { return this.sourceString; },
 _iter: function (...children) { return children.map(c => c._glue ()); }
 };
+// yyy
 
 function _ruleInit () {
 }
