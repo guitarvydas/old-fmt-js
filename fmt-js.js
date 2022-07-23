@@ -20,7 +20,7 @@ function fmtjs (fmtsrc, fixup) {
     // Step 1b. Transpile User's FMT spec to a JS object (for use with Ohm-JS)
     try {
         var sem = internalgrammar.createSemantics ();
-        sem.addOperation ('_glue', fmtSemantics);
+        sem.addOperation ('_glue', semObject);
         var generatedFmtWalker = sem (fmtcst);
         var generated = generatedFmtWalker._glue ();
         var generatedFmtCodeString = fixup (generated);
@@ -62,161 +62,164 @@ Param =
 var varNameStack = [];
 
 
-const fmtSemantics = {   
-    top : function (_rule,_ws) { 
-	_ruleEnter ("top");
 
-	var rule = _rule._glue ().join ('');
-	var ws = _ws._glue ();
-	var _result = `${rule}${ws}`; 
-	_ruleExit ("top");
-	return _result; 
-    },
-    
-    rule : function (_lhs,_ws1,_keq,_ws2,_rws) { 
-	_ruleEnter ("rule");
+const semObject = {   
+top : function (_rule,_ws) { 
+_ruleEnter ("top");
 
-	var lhs = _lhs._glue ();
-	var ws1 = _ws1._glue ();
-	var keq = _keq._glue ();
-	var ws2 = _ws2._glue ();
-	var rws = _rws._glue ();
-	var _result = `${lhs}${ws1}${keq}${ws2}${rws}`; 
-	_ruleExit ("rule");
-	return _result; 
-    },
-    
-    RuleLHS : function (_name,_lb,_Params,_rb) { 
-	_ruleEnter ("RuleLHS");
+var rule = _rule._glue ().join ('');
+var ws = _ws._glue ();
+var _result = `${rule}${ws}`; 
+_ruleExit ("top");
+return _result; 
+},
+            
+rule : function (_lhs,_ws1,_keq,_ws2,_rws) { 
+_ruleEnter ("rule");
 
-	var name = _name._glue ();
-	var lb = _lb._glue ();
-	var Params = _Params._glue ().join ('');
-	var rb = _rb._glue ();
-	var _result = `${name}${lb}${Params}${rb}`; 
-	_ruleExit ("RuleLHS");
-	return _result; 
-    },
-    
-    rewriteString : function (_sb,_cs,_se) { 
-	_ruleEnter ("rewriteString");
+var lhs = _lhs._glue ();
+var ws1 = _ws1._glue ();
+var keq = _keq._glue ();
+var ws2 = _ws2._glue ();
+var rws = _rws._glue ();
+var _result = `${lhs}${ws1}${keq}${ws2}${rws}`; 
+_ruleExit ("rule");
+return _result; 
+},
+            
+RuleLHS : function (_name,_lb,_Params,_rb) { 
+_ruleEnter ("RuleLHS");
 
-	var sb = _sb._glue ();
-	var cs = _cs._glue ().join ('');
-	var se = _se._glue ();
-	var _result = `${sb}${cs}${se}`; 
-	_ruleExit ("rewriteString");
-	return _result; 
-    },
-    
-    stringBegin : function (_c) { 
-	_ruleEnter ("stringBegin");
+var name = _name._glue ();
+var lb = _lb._glue ();
+var Params = _Params._glue ().join ('');
+var rb = _rb._glue ();
+var _result = `${name}: function () {\n_ruleEnter ("${name}");\n${lb}${Params}${rb}\n_ruleExit ("${name}");
+}
+`; 
+_ruleExit ("RuleLHS");
+return _result; 
+},
+            
+rewriteString : function (_sb,_cs,_se) { 
+_ruleEnter ("rewriteString");
 
-	var c = _c._glue ();
-	var _result = `${c}`; 
-	_ruleExit ("stringBegin");
-	return _result; 
-    },
-    
-    stringEnd : function (_c) { 
-	_ruleEnter ("stringEnd");
+var sb = _sb._glue ();
+var cs = _cs._glue ().join ('');
+var se = _se._glue ();
+var _result = `${sb}${cs}${se}`; 
+_ruleExit ("rewriteString");
+return _result; 
+},
+            
+stringBegin : function (_c) { 
+_ruleEnter ("stringBegin");
 
-	var c = _c._glue ();
-	var _result = `${c}`; 
-	_ruleExit ("stringEnd");
-	return _result; 
-    },
-    
-    char_eval : function (_lb,_name,_rb) { 
-	_ruleEnter ("char_eval");
+var c = _c._glue ();
+var _result = `${c}`; 
+_ruleExit ("stringBegin");
+return _result; 
+},
+            
+stringEnd : function (_c) { 
+_ruleEnter ("stringEnd");
 
-	var lb = _lb._glue ();
-	var name = _name._glue ();
-	var rb = _rb._glue ();
-	var _result = `${lb}${name}${rb}`; 
-	_ruleExit ("char_eval");
-	return _result; 
-    },
-    
-    char_evalShorthand : function (_k,_name) { 
-	_ruleEnter ("char_evalShorthand");
+var c = _c._glue ();
+var _result = `${c}`; 
+_ruleExit ("stringEnd");
+return _result; 
+},
+            
+char_eval : function (_lb,_name,_rb) { 
+_ruleEnter ("char_eval");
 
-	var k = _k._glue ();
-	var name = _name._glue ();
-	var _result = `${k}${name}`; 
-	_ruleExit ("char_evalShorthand");
-	return _result; 
-    },
-    
-    char_raw : function (_c) { 
-	_ruleEnter ("char_raw");
+var lb = _lb._glue ();
+var name = _name._glue ();
+var rb = _rb._glue ();
+var _result = `${lb}${name}${rb}`; 
+_ruleExit ("char_eval");
+return _result; 
+},
+            
+char_evalShorthand : function (_k,_name) { 
+_ruleEnter ("char_evalShorthand");
 
-	var c = _c._glue ();
-	var _result = `${c}`; 
-	_ruleExit ("char_raw");
-	return _result; 
-    },
-    
-    name : function (_c,_cs) { 
-	_ruleEnter ("name");
+var k = _k._glue ();
+var name = _name._glue ();
+var _result = `${k}${name}`; 
+_ruleExit ("char_evalShorthand");
+return _result; 
+},
+            
+char_raw : function (_c) { 
+_ruleEnter ("char_raw");
 
-	var c = _c._glue ();
-	var cs = _cs._glue ().join ('');
-	var _result = `${c}${cs}`; 
-	_ruleExit ("name");
-	return _result; 
-    },
-    
-    nameRest : function (_c) { 
-	_ruleEnter ("nameRest");
+var c = _c._glue ();
+var _result = `${c}`; 
+_ruleExit ("char_raw");
+return _result; 
+},
+            
+name : function (_c,_cs) { 
+_ruleEnter ("name");
 
-	var c = _c._glue ();
-	var _result = `${c}`; 
-	_ruleExit ("nameRest");
-	return _result; 
-    },
-    
-    Param_plus : function (_name,_k) { 
-	_ruleEnter ("Param_plus");
+var c = _c._glue ();
+var cs = _cs._glue ().join ('');
+var _result = `${c}${cs}`; 
+_ruleExit ("name");
+return _result; 
+},
+            
+nameRest : function (_c) { 
+_ruleEnter ("nameRest");
 
-	var name = _name._glue ();
-	var k = _k._glue ();
-	var _result = `${name}${k}`; 
-	_ruleExit ("Param_plus");
-	return _result; 
-    },
-    
-    Param_star : function (_name,_k) { 
-	_ruleEnter ("Param_star");
+var c = _c._glue ();
+var _result = `${c}`; 
+_ruleExit ("nameRest");
+return _result; 
+},
+            
+Param_plus : function (_name,_k) { 
+_ruleEnter ("Param_plus");
 
-	var name = _name._glue ();
-	var k = _k._glue ();
-	var _result = `${name}${k}`; 
-	_ruleExit ("Param_star");
-	return _result; 
-    },
-    
-    Param_opt : function (_name,_k) { 
-	_ruleEnter ("Param_opt");
+var name = _name._glue ();
+var k = _k._glue ();
+var _result = `[\nvar ${name} = _${name}._glue ().join ('')]]`; 
+_ruleExit ("Param_plus");
+return _result; 
+},
+            
+Param_star : function (_name,_k) { 
+_ruleEnter ("Param_star");
 
-	var name = _name._glue ();
-	var k = _k._glue ();
-	var _result = `${name}${k}`; 
-	_ruleExit ("Param_opt");
-	return _result; 
-    },
-    
-    Param_flat : function (_name) { 
-	_ruleEnter ("Param_flat");
+var name = _name._glue ();
+var k = _k._glue ();
+var _result = `[\nvar ${name} = _${name}._glue ().join ('')]]`; 
+_ruleExit ("Param_star");
+return _result; 
+},
+            
+Param_opt : function (_name,_k) { 
+_ruleEnter ("Param_opt");
 
-	var name = _name._glue ();
-	var _result = `${name}`; 
-	_ruleExit ("Param_flat");
-	return _result; 
-    },
-    
-    _terminal: function () { return this.sourceString; },
-    _iter: function (...children) { return children.map(c => c._glue ()); }
+var name = _name._glue ();
+var k = _k._glue ();
+var _result = `[\nvar ${name} = _${name}._glue ().join ('')]]`; 
+_ruleExit ("Param_opt");
+return _result; 
+},
+            
+Param_flat : function (_name) { 
+_ruleEnter ("Param_flat");
+
+var name = _name._glue ();
+var _result = `\nvar ${name} = _${name}._glue ();`; 
+_ruleExit ("Param_flat");
+return _result; 
+},
+            
+_terminal: function () { return this.sourceString; },
+_iter: function (...children) { return children.map(c => c._glue ()); }
 };
 
 function _ruleInit () {
