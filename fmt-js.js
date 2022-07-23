@@ -110,7 +110,7 @@ _ruleEnter ("rewriteString");
 var sb = _sb._glue ();
 var cs = _cs._glue ().join ('');
 var se = _se._glue ();
-var _result = `${sb}${cs}${se}`; 
+var _result = `return \`${cs}\`;`; 
 _ruleExit ("rewriteString");
 return _result; 
 },
@@ -119,7 +119,7 @@ stringBegin : function (_c) {
 _ruleEnter ("stringBegin");
 
 var c = _c._glue ();
-var _result = `${c}`; 
+var _result = ``; 
 _ruleExit ("stringBegin");
 return _result; 
 },
@@ -128,7 +128,7 @@ stringEnd : function (_c) {
 _ruleEnter ("stringEnd");
 
 var c = _c._glue ();
-var _result = `${c}`; 
+var _result = ``; 
 _ruleExit ("stringEnd");
 return _result; 
 },
@@ -139,7 +139,7 @@ _ruleEnter ("char_eval");
 var lb = _lb._glue ();
 var name = _name._glue ();
 var rb = _rb._glue ();
-var _result = `${name}`; 
+var _result = `\$\{${name}\}`; 
 _ruleExit ("char_eval");
 return _result; 
 },
@@ -149,7 +149,7 @@ _ruleEnter ("char_evalShorthand");
 
 var k = _k._glue ();
 var name = _name._glue ();
-var _result = `${name}`; 
+var _result = `\$\{${name}\}`; 
 _ruleExit ("char_evalShorthand");
 return _result; 
 },
@@ -187,7 +187,7 @@ _ruleEnter ("Param_plus");
 
 var name = _name._glue ();
 var k = _k._glue ();
-var _result = `[\nvar ${name} = _${name}._glue ().join ('')]]`; 
+var _result = `\nvar ${name} = _${name}._glue ().join ('');`; 
 _ruleExit ("Param_plus");
 return _result; 
 },
@@ -197,7 +197,7 @@ _ruleEnter ("Param_star");
 
 var name = _name._glue ();
 var k = _k._glue ();
-var _result = `[\nvar ${name} = _${name}._glue ().join ('')]]`; 
+var _result = `\nvar ${name} = _${name}._glue ().join ('');`; 
 _ruleExit ("Param_star");
 return _result; 
 },
@@ -207,7 +207,7 @@ _ruleEnter ("Param_opt");
 
 var name = _name._glue ();
 var k = _k._glue ();
-var _result = `[\nvar ${name} = _${name}._glue ().join ('')]]`; 
+var _result = `[\nvar ${name} = _${name}._glue ().join ('');]]`; 
 _ruleExit ("Param_opt");
 return _result; 
 },
