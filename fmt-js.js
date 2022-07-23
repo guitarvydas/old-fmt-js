@@ -70,7 +70,10 @@ _ruleEnter ("top");
 
 var rule = _rule._glue ().join ('');
 var ws = _ws._glue ();
-var _result = `${rule}${ws}`; 
+var _result = `const semObject = {
+${rule}{}
+};
+`; 
 _ruleExit ("top");
 return _result; 
 },
@@ -85,7 +88,7 @@ var ws2 = _ws2._glue ();
 var rws = _rws._glue ();
 var _result = `${lhs}${rws}
 _ruleExit ("${getRuleName ()}");
-}
+},
 `; 
 _ruleExit ("rule");
 return _result; 

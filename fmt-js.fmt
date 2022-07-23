@@ -1,9 +1,13 @@
-top [@rule ws] = [[${rule}${ws}]]
+top [@rule ws] = [[const semObject = {
+${rule}${ws},
+{}
+};
+]]
 rule [lhs ws1 keq ws2 rws] = [[${lhs}${rws}
 _ruleExit ("${getRuleName ()}");
 }
 ]]
-RuleLHS [name lb @Params rb] = [[${name}: function () {\n_ruleEnter ("${name}");${setRuleName (name)}${Params}
+RuleLHS [name lb @Params rb] = [[${name}: function () {\n_ruleEnter ("${name}");${setRuleName (name)}${Params},
 ]]
 rewriteString [sb @cs se] = [[return \`${cs}\`;]]
 stringBegin [c] = [[]]
