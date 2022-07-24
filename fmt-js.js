@@ -128,13 +128,11 @@ return _result;
             
     ////
 
-    
-    rewriteString : function (_sb,_cs,_se, _ws) { 
+
+    // rewriteString [sb @cs se ws] = [[return \`${cs}\`;]]
+    rewriteString : function (_sb,_cs,_se,_ws) { 
 _ruleEnter ("rewriteString");
-	console.log (_sb);
-	console.log (_cs);
-	console.log (_se);
-	console.log (_ws);
+
 var sb = _sb._glue ();
 var cs = _cs._glue ().join ('');
 var se = _se._glue ();
@@ -143,7 +141,9 @@ var _result = `return \`${cs}\`;`;
 _ruleExit ("rewriteString");
 return _result; 
 },
-            
+
+
+    ////
 char_eval : function (_lb,_name,_rb) { 
 _ruleEnter ("char_eval");
 
@@ -163,7 +163,11 @@ var _result = `${c}`;
 _ruleExit ("char_raw");
 return _result; 
 },
+    ////
             
+// name [c @cs] = [[${c}${cs}]]
+// nameRest [c] = [[${c}]]
+
 name : function (_c,_cs) { 
 _ruleEnter ("name");
 
@@ -182,7 +186,16 @@ var _result = `${c}`;
 _ruleExit ("nameRest");
 return _result; 
 },
-            
+
+    ////
+
+
+// Param_plus [name k] = [[\nvar ${name} = _${name}._glue ().join ('');]]
+// Param_star [name k] = [[\nvar ${name} = _${name}._glue ().join ('');]]
+// Param_opt [name k] = [[\nvar ${name} = _${name}._glue ().join ('');]]
+// Param_flat [name] = [[\nvar ${name} = _${name}._glue ();]]
+
+
 Param_plus : function (_name,_k) { 
 _ruleEnter ("Param_plus");
 
@@ -208,7 +221,7 @@ _ruleEnter ("Param_opt");
 
 var name = _name._glue ();
 var k = _k._glue ();
-var _result = `[\nvar ${name} = _${name}._glue ().join ('');]]`; 
+var _result = `\nvar ${name} = _${name}._glue ().join ('');`; 
 _ruleExit ("Param_opt");
 return _result; 
 },
@@ -222,6 +235,8 @@ _ruleExit ("Param_flat");
 return _result; 
 },
             
+    ////
+
 _terminal: function () { return this.sourceString; },
     _iter: function (...children) { return children.map(c => c._glue ()); },
 spaces: function (x) { return this.sourceString; },
