@@ -185,6 +185,21 @@ separator [c] = [[]]
 
 `;
 
+    function generate () {
+      let src = document.getElementById('src').value;
+      try {
+          let [success, expanded] = fmtjs (src);
+          document.getElementById('output').value = expanded;
+          if (success) {
+              document.getElementById('status').innerHTML = "OK";
+          } else {
+              document.getElementById('status').innerHTML = "FAILED";
+          }
+      } catch (err) {
+          document.getElementById('status').innerHTML = "parse FAILED: " + err.message;
+      }
+  }
+
   function transpile1 (src, grammar, fmt, message) {
       var success = false;
       var transpiled = '';
