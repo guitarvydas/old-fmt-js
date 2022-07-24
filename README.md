@@ -45,3 +45,6 @@ The output is Javascript, meant to be bolted into an Ohm-JS project.
 The output Javascript is not neatly formatted.  I emphasize machine-readabilit-writability over human-readability.
 
 Human readability can be achieved by grinding the output through a pretty-printer (I currently use emacs' "indent-region" command).
+
+# Contrib
+I would enjoy handing this off to anyone who wants to clean it up and make it distributable.

@@ -1,13 +1,28 @@
-function transpile (src, grammar, fmt) {
-    [matchsuccess, cst, errormessage] = patternmatch (src, grammar);
+function transpile (src, grammarName, grammars, fmt) {
+    [matchsuccess, cst, errormessage] = patternmatch (src, grammarName, grammars);
     if (!matchsuccess) {
-	return [false, "matching error " + errormessage];
+	return [false, "", "pattern matching error " + errormessage];
     } else {
-	[fmtsuccess, transpiledString, errorString] = rewrite (cst, fmt);
-	if (!fmtsuccess) {
-	    return [false, "rewriting error " + errorString];
-	} else {
-	    return [true, transpiledString];
-	}
+	return [true, "NIY WIP", ""];
     }
+}
+
+
+function patternmatch (src, grammarName, grammars) {
+    try {
+	var grammarSpecs = ohm.grammars (grammars);
+    } catch (err) {
+	return [false, None, err.message];
+    }
+    try {
+	var grammar = grammarSpecs [grammarName];
+    } catch (err) {
+	return [false, None, `grammar ${grammarName} not found in given grammars`];
+    }
+    try {
+	var cst = grammar.match (src);
+    } catch (err) {
+	return [false, None, err.message];
+    }
+    return [true, cst, ""];
 }
