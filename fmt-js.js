@@ -71,6 +71,7 @@ var varNameStack = [];
 
 const semObject = {
 
+
 //     top [@rule] = [[const semObject = {
 // ${rule}{}
 // };
@@ -88,7 +89,14 @@ ${rule}{}
 	return _result; 
     },
 
-            
+    ////
+    
+// rule [lhs ws1 keq ws2 rws] = [[${lhs}${rws}
+// _ruleExit ("${getRuleName ()}");
+// }
+// ]]
+
+
 rule : function (_lhs,_ws1,_keq,_ws2,_rws) { 
 _ruleEnter ("rule");
 
@@ -99,12 +107,15 @@ var ws2 = _ws2._glue ();
 var rws = _rws._glue ();
 var _result = `${lhs}${rws}
 _ruleExit ("${getRuleName ()}");
-},
+}
 `; 
 _ruleExit ("rule");
 return _result; 
 },
-            
+    ////
+    
+// RuleLHS [name lb @Params rb] = [[${name}: function () {\n_ruleEnter ("${name}");${setRuleName (name)}${Params},
+// ]]
 RuleLHS : function (_name,_lb,_Params,_rb) { 
 _ruleEnter ("RuleLHS");
 
@@ -112,11 +123,13 @@ var name = _name._glue ();
 var lb = _lb._glue ();
 var Params = _Params._glue ().join ('');
 var rb = _rb._glue ();
-var _result = `${name}: function (${extractFormals (Params)}) {\n_ruleEnter ("${name}");${setRuleName (name)}${Params}
+var _result = `${name}: function () {\n_ruleEnter ("${name}");${setRuleName (name)}${Params},
 `; 
 _ruleExit ("RuleLHS");
 return _result; 
 },
+            
+    ////
             
     rewriteString : function (_sb,_cs,_se, _ws) { 
 _ruleEnter ("rewriteString");
