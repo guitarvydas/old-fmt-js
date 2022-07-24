@@ -68,7 +68,7 @@ var varNameStack = [];
 
 //// top = spaces name spaces "{" rule+ "}" spaces
 // top [ws1 name ws2 lb @rule rb ws3] = [[{
-// ${rule}{}
+// ${rule}_ : false
 // }
 // ]]
 
@@ -85,7 +85,7 @@ const semObject = {
 	var rb = _rb._fmt ();
 	var ws3 = _ws3._fmt ();
 	var _result = `{
-${rule}{}
+${rule}_ : false
 }
 `;
 	_ruleExit ("top");
