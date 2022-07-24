@@ -1,9 +1,6 @@
-function fmtjs (fmtsrc, fixup) {
+function fmtjs (fmtsrc) {
     // expand the string fmtsrc into JavaScript suitable for
     // inclusion as a semantic object for Ohm.js
-    //
-    // fixup is a function which is applied to the generated code before
-    // the code is evaled
     //
     var s = '';
 
@@ -23,8 +20,7 @@ function fmtjs (fmtsrc, fixup) {
         sem.addOperation ('_glue', semObject);
         var generatedFmtWalker = sem (fmtcst);
         var generated = generatedFmtWalker._glue ();
-        var generatedFmtCodeString = fixup (generated);
-	return [true, generatedFmtCodeString];
+	return [true, generated];
     } catch (err) {
         throw "error generating code from FMT specification";
     }

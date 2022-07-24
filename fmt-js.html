@@ -79,15 +79,10 @@ NonemptyListOf [x xs+ cs+] = ‛«x»«xs»«cs»’
 
 
   
-  function fixup (s) {
-      return s
-	  .replace (/%{/g, '${');
-  }
-
   function generate () {
       let src = document.getElementById('src').value;
       try {
-          let [success, expanded] = fmtjs (src, fixup);
+          let [success, expanded] = fmtjs (src);
           document.getElementById('output').value = expanded;
           if (success) {
               document.getElementById('status').innerHTML = "OK";

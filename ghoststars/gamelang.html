@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+textarea {
+}
+</style>
+</head>
+<body>
+
+<h1>JAM0003 Transpiler for Ghost Stars (WIP)</h1>
+<p>source:</p>
+<textarea id="src" rows="7" cols="90" placeholder="src" style="background-color:oldlace;">
+❖ Room r0
+❖ Show prolog_bg at 0x-550. Move prolog_bg to 0x0
+over 300 frames. Wait 150 frames.
+
+		    CHEL:NA
+	  The last time I saw
+	  her... She was smiling. As
+	  if she had some secret that
+	  she couldn't wait to tell me.
+	  
+	  And then, in a sudden wash of
+	  red, she was gone.
+	  
+	  Gone as if she had never stood
+	  beneath the uncaring stars.
+
+❖ Fade Out. Jump INTRO.
+</textarea>
+
+
+<p>output:</p>
+<textarea id="output" rows="15" cols="150" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+</textarea>
+<!-- <textarea id="temp" rows="15" cols="50" placeholder="transpiled"  readonly style="background-color:whitesmoke;"> -->
+<!-- </textarea> -->
+<br>
+<br>
+<p id="status" > READY </p>
+<br>
+<button onclick="transpileJSON ()">Transpile<br>to<br>JSON</button>
+<!-- <button onclick="transpileLisp ()">Transpile<br>to<br>Lisp</button> -->
+<!-- <button onclick="transpileIdentity ()">Transpile<br>Identity<br>(ignore)</button -->
+<!-- Ohm-JS -->
+<script src="https://unpkg.com/ohm-js@16/dist/ohm.min.js"></script>
+
+
+<!-- fmt-js -->
+<script src="../fmt-js.js"></script>
+
+
+<script>
+  function fixup (s) {
+      return s
+          .replace (/~{/g, '${');
+  }
+
+  const noopgrammar = String.raw`
+Noop {
+text = any+
+}
+`;
+  
+  const grammarB = String.raw`
+preprocess {
+text = macro+
+macro = 
+  | applySyntactic<FadeOut>
+  | any
+FadeOut = "Fade" "Out"
+}
+`;
+  
+  const grammar = String.raw`
+GhostStars {
+text = macro+
+
+macro = 
+  | applySyntactic<RoomPhrase>
+  | applySyntactic<ShowPhrase>
+  | applySyntactic<MovePhrase>
+  | applySyntactic<WaitPhrase>
+  | applySyntactic<FadeToBlackPhrase>
+  | applySyntactic<JumpPhrase>
+  | lex_spoken
+  | period
+  | separator
+  | nls
+  | any
+  
+RoomPhrase = "Room" roomname
+ShowPhrase = "Show" filename "at" Coordinate
+MovePhrase = "Move" filename "to" Coordinate TimeSpan
+WaitPhrase = "Wait" number "frames"
+FadeToBlackPhrase = "Fade" "to" "black" TimeSpan
+JumpPhrase = "Jump" ChapterName
+
+lex_spoken = speaker spoken
+
+speaker = speakerSpaces name
+speakerSpaces = 
+  | "                    " -- spaces20
+  | tab tab "    "         -- tabtabspaces4
+
+Coordinate = number "x" number
+TimeSpan = "over" number "frames"
+ChapterName = name
+filename = name
+roomname = name
+
+spoken = spokenchar+
+spokenchar = ~separator any
+
+period = "."
+separator = "❖"
+
+name = nameFirst nameRest*
+nameFirst = letter
+nameRest = "_" | ":" | digit | nameFirst
+number = "-"? digit+
+
+nls = nl+
+nl = "\n"
+tab = "\t"
+}
+`;
+  const noopfmt = String.raw`
+text [@c] = [[~{c}]]
+`;
+  
+  const fmtB = String.raw`
+text [@x] = [[~{x}]]
+macro [x] = [[~{x}]]
+FadeOut [kfade kout] = [[Fade to black over 43 frames]]
+`;
+
+  var room = "#";
+  
+  function order (x) {
+      console.log (x);
+      return x + `: ${room} : `;
+  }
+  
+  function getr () {
+      return `'${room}'`;
+  }
+  
+  const jsonfmt = String.raw`
+text [@macro] = [[\nvoid onenter (${getr ()}) {:\n[~{macro}true]\n}\n]]
+
+macro [x] = [[~{x}]]
+  
+RoomPhrase [kRoomm roomname] = [[\n~{room = roomname,""}]]
+ShowPhrase [kShow filename kat Coordinate] = [[\nimage (~{getr ()}, '~{filename}', ~{Coordinate});]]
+MovePhrase [kMove filename kto Coordinate TimeSpan] = [[\n~{order("b")}["moveto","~{filename}","???",~{Coordinate}~{TimeSpan},"easin"],]]
+WaitPhrase [kWait number kframes] = [[\n~{order ("c")}["wait",~{number}],]]
+FadeToBlackPhrase [kFade kto kblack TimeSpan] = [[\n~{order ("e")}["fadeout",~{TimeSpan}],]]
+JumpPhrase [kJump ChapterName] = [[\n~{order ("f")}["jump","~{ChapterName}"],]]
+lex_spoken [speaker spoken] = [[\n~{order ("d")}["say","~{speaker}~{spoken}"],]]
+speaker [speakerSpaces name] = [[~{speakerSpaces}~{name}]]
+speakerSpaces_spaces20 [spaces] = [[                    ]]
+speakerSpaces_tabtabspaces4 [tab1 tab2 spaces4] = [[                    ]]
+
+Coordinate [number1 kx number2] = [[~{number1}, ~{number2}]]
+TimeSpan [kover number kframes] = [[~{number}]]
+ChapterName [name] = [[~{name}]]
+filename [name] = [[~{name}]]
+roomname [name] = [[~{name}]]
+
+spoken [@cs] = [[~{cs}]]
+spokenchar [c] = [[~{c}]]
+
+name [nameFirst @nameRest] = [[~{nameFirst}~{nameRest}]]
+nameFirst [letter] = [[~{letter}]]
+nameRest [c] = [[~{c}]]
+number [@kminus @digit] = [[~{kminus}~{digit}]]
+
+nls [@cs] = [[]]
+nl [c] = [[~{c}]]
+tab [c] = [[~{c}]]
+period [c] = [[]]
+separator [c] = [[]]
+
+`;
+
+  function transpile1 (src, grammar, fmt, message) {
+      var success = false;
+      var transpiled = '';
+      var jssemantics = '';
+      try {
+          [success, transpiled, jssemantics] = expand1 (src, grammar, fmt, fixup);
+      } catch (err) {
+          success = false;
+      }
+      if (success) {
+          return [true, transpiled];
+      } else {
+          document.getElementById('status').innerHTML = "FAILED " + message + "<br>" + Date ();
+          return [false, transpiled];
+      }
+  }
+
+  var transpileSuccess;
+  var errorMessages = '';
+  
+  function finalize (success, transpiled) {
+      transpileSuccess &&= success;
+      if (transpileSuccess) {
+          document.getElementById('status').innerHTML = "OK " + Date ();
+          //document.getElementById('temp').innerHTML = step;
+          document.getElementById('output').innerHTML = transpiled;
+      } else {
+          document.getElementById('output').innerHTML = errorMessages + transpiled;
+      }
+  }
+  
+  // function transpileIdentity () {
+  //     // first step in building a fmt specification: output=input
+  //     transpile (identityfmt);
+  // }
+
+  function transpileJSON () {
+      transpileSuccess = true;
+      document.getElementById('output').innerHTML = '';
+      let src = document.getElementById('src').value;
+      let [successA, transpiledA] = transpile1 (src, noopgrammar, noopfmt, "transpile A");
+      document.getElementById ('output').value = transpiledA;
+      if (successA) {
+	  let [successB, transpiledB] = transpile1 (transpiledA, grammarB, fmtB, "transpile B");
+	  if (successB) {
+	      let [success, transpiled] = transpile1 (transpiledB, grammar, jsonfmt, "transpile C");
+	      finalize (success, transpiled);
+	  } else {
+	      finalize (successB, transpiledB);
+	  }
+      } else {
+	  finalize (successA, transpiledA);
+      }
+  }
+  
+  // function transpileLisp () {
+  //     transpile (lispfmt);
+  // }
+  
+
+  function transpilerError (message) {
+      errorMessages += '\n' + message;
+      transpileSuccess = false;
+  }
+  </script>
+</body>
+</html>
+
+
