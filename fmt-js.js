@@ -128,13 +128,11 @@ return _result;
             
     ////
 
-    
-    rewriteString : function (_sb,_cs,_se, _ws) { 
+
+    // rewriteString [sb @cs se ws] = [[return \`${cs}\`;]]
+    rewriteString : function (_sb,_cs,_se,_ws) { 
 _ruleEnter ("rewriteString");
-	console.log (_sb);
-	console.log (_cs);
-	console.log (_se);
-	console.log (_ws);
+
 var sb = _sb._glue ();
 var cs = _cs._glue ().join ('');
 var se = _se._glue ();
@@ -143,6 +141,7 @@ var _result = `return \`${cs}\`;`;
 _ruleExit ("rewriteString");
 return _result; 
 },
+
             
 char_eval : function (_lb,_name,_rb) { 
 _ruleEnter ("char_eval");
