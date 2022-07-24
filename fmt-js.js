@@ -33,11 +33,10 @@ var traceDepth;
 const fmtGrammar =
       String.raw`
 FMT {
-top = rule+ spaces
+top = rule+
 rule = applySyntactic<RuleLHS> spaces "=" spaces rewriteString
 RuleLHS = name "[" Param+ "]"
-rewriteString =
-  | stringBegin char* stringEnd
+rewriteString = stringBegin char* stringEnd spaces
 stringBegin = "‛" | "[["
 stringEnd = "’" | "]]"
 char =
@@ -70,11 +69,10 @@ var varNameStack = [];
 
 const semObject = {
 
-top : function (_rule,_ws) { 
+top : function (_rule) { 
 _ruleEnter ("top");
 
 var rule = _rule._glue ().join ('');
-var ws = _ws._glue ();
 var _result = `const semObject = {
 ${rule}{}
 };
@@ -112,7 +110,7 @@ _ruleExit ("RuleLHS");
 return _result; 
 },
             
-rewriteString : function (_sb,_cs,_se) { 
+    rewriteString : function (_sb,_cs,_se, _ws) { 
 _ruleEnter ("rewriteString");
 
 var sb = _sb._glue ();
