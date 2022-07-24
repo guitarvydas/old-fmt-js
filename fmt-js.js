@@ -69,17 +69,23 @@ var varNameStack = [];
 
 const semObject = {
 
-top : function (_rule) { 
-_ruleEnter ("top");
+//     top [@rule] = [[const semObject = {
+// ${rule}{}
+// };
+// ]]
 
-var rule = _rule._glue ().join ('');
-var _result = `const semObject = {
+    top : function (_rule) { 
+	_ruleEnter ("top");
+	
+	var rule = _rule._glue ().join ('');
+	var _result = `const semObject = {
 ${rule}{}
 };
 `; 
-_ruleExit ("top");
-return _result; 
-},
+	_ruleExit ("top");
+	return _result; 
+    },
+
             
 rule : function (_lhs,_ws1,_keq,_ws2,_rws) { 
 _ruleEnter ("rule");
