@@ -165,6 +165,9 @@ return _result;
 },
     ////
             
+// name [c @cs] = [[${c}${cs}]]
+// nameRest [c] = [[${c}]]
+
 name : function (_c,_cs) { 
 _ruleEnter ("name");
 
@@ -183,7 +186,9 @@ var _result = `${c}`;
 _ruleExit ("nameRest");
 return _result; 
 },
-            
+
+    ////
+    
 Param_plus : function (_name,_k) { 
 _ruleEnter ("Param_plus");
 
