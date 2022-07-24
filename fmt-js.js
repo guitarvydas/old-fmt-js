@@ -127,10 +127,14 @@ return _result;
 },
             
     ////
-            
+
+    
     rewriteString : function (_sb,_cs,_se, _ws) { 
 _ruleEnter ("rewriteString");
-
+	console.log (_sb);
+	console.log (_cs);
+	console.log (_se);
+	console.log (_ws);
 var sb = _sb._glue ();
 var cs = _cs._glue ().join ('');
 var se = _se._glue ();
@@ -218,7 +222,9 @@ return _result;
 },
             
 _terminal: function () { return this.sourceString; },
-_iter: function (...children) { return children.map(c => c._glue ()); }
+    _iter: function (...children) { return children.map(c => c._glue ()); },
+spaces: function (x) { return this.sourceString; },
+space: function (x) { return this.sourceString; }
 };
 // yyy
 
