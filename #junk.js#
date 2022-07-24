@@ -1,0 +1,5 @@
+rule [lhs ws1 keq ws2 rws] = [[${lhs}${rws}
+_ruleExit ("${getRuleName ()}");
+}
+]]
+
