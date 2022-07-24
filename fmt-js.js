@@ -291,3 +291,8 @@ function getFmtGrammar () {
     return fmtGrammar;
 }
 
+  // helper functions
+  var ruleName = "???";
+  function setRuleName (s) { ruleName = s; return "";}
+  function getRuleName () { return ruleName; }
+

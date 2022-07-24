@@ -3,6 +3,7 @@ function transpile (src, grammarName, grammars, fmt) {
     if (!matchsuccess) {
 	return [false, "", "pattern matching error " + errormessage];
     } else {
+	var semantics = fmtjs (fmt);
 	return [true, "NIY WIP", ""];
     }
 }
