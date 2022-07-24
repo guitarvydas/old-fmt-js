@@ -39,7 +39,6 @@ RuleLHS = name "[" Param+ "]"
 rewriteString = "‛" char* "’" spaces
 char =
   | "«" name "»" -- eval
-  | "$" name     -- evalShorthand
   | ~"’" ~"]]" any     -- raw
 name = letter nameRest*
 nameRest = "_" | alnum
@@ -148,16 +147,6 @@ var name = _name._glue ();
 var rb = _rb._glue ();
 var _result = `\$\{${name}\}`; 
 _ruleExit ("char_eval");
-return _result; 
-},
-            
-char_evalShorthand : function (_k,_name) { 
-_ruleEnter ("char_evalShorthand");
-
-var k = _k._glue ();
-var name = _name._glue ();
-var _result = `\$\{${name}\}`; 
-_ruleExit ("char_evalShorthand");
 return _result; 
 },
             
