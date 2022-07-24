@@ -39,27 +39,34 @@ textarea {
 <script>
 
 const smallsrc = String.raw`
+Test {
 //
 Rule1 [x] = ‛«x»’
 //
+}
 `;
 
   const smallsrc2 = String.raw`
+Test {
 //
 Rule1 [x] = ‛«x»’
 Rule2 [x+] = ‛«x»’
 //
+}
 `;
   const smallsrc3 = String.raw`
+Test {
 //
 Rule1 [x] = ‛«x»’
 Rule2 [x+] = ‛«x»’
 Rule3 [a+ b* c?] = ‛«a»«b»«c»’
 //
+}
 `;
 
 
   const bigsrc = String.raw`
+Test {
 TopLevel [x+] = ‛«x»’
 ConstDeclaration [kconst ident kto expression] = ‛\nconst «ident» = «expression»;’
 FunctionDeclaration [kfn ident Formals Block] = ‛\nfunction «ident» («Formals») {«Block»\n’
@@ -94,6 +101,7 @@ identFirst [c] = ‛«c»’
 identRest [c] = ‛«c»’
 
 NonemptyListOf [x xs+ cs+] = ‛«x»«xs»«cs»’
+}
 `;
 
 
