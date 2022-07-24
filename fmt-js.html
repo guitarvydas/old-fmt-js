@@ -45,7 +45,7 @@ Rule1 [x] = ‛«x»’
 //
 }
 `;
-
+  
   const smallsrc2 = String.raw`
 Test {
 //
@@ -61,6 +61,12 @@ Rule1 [x] = ‛«x»’
 Rule2 [x+] = ‛«x»’
 Rule3 [a+ b* c?] = ‛«a»«b»«c»’
 //
+}
+`;
+const smallsrc4 = String.raw`
+Test {
+Main [A] = ‛«A»’
+A [k] = ‛«k»’
 }
 `;
 
@@ -105,7 +111,7 @@ NonemptyListOf [x xs+ cs+] = ‛«x»«xs»«cs»’
 `;
 
 
-  var src = smallsrc;
+  var src = smallsrc4;
 
 
   

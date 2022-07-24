@@ -13,7 +13,7 @@ Load `fmt-js.html` into a browser (I use Chrome) and click "Generate JavaScript 
 Cut/paste generated code into your Ohm-JS project.
 
 # Documentation
-to follow (second 48-hour part of langjam)
+to follow (second part of langjam)
 
 # Example Tests
 change the line
@@ -42,7 +42,7 @@ in `fmt-js.html`, then re-load and re-run.
 
 The output is Javascript, meant to be bolted into an Ohm-JS project.
 
-The output Javascript is not neatly formatted.  I emphasize machine-readabilit-writability over human-readability.
+The output Javascript is not neatly formatted.  I emphasize machine-readability-writability over human-readability.
 
 Human readability can be achieved by grinding the output through a pretty-printer (I currently use emacs' "indent-region" command).
 
@@ -54,4 +54,4 @@ It should be possible to generate code for any other textual language using Ohm-
 (In fact, I have generated Python and JSON and Common Lisp code using Ohm-JS).
 
 # Contrib
-I would enjoy handing this off to anyone who wants to clean it up and make it distributable.
+I would enjoy handing this off to anyone who wants to understand it and clean it up.
