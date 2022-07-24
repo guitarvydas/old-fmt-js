@@ -14,7 +14,7 @@ function transpile (src, grammarName, grammars, fmt) {
 	    return [false, null, 'error compiling .fmt specification ' + err.message + ' ' + semanticsFunctionsAsString];
 	}
 	try {
-	    sem.addOperation ("_fmt", semanticsFunctions);
+	    sem.addOperation ("_fmt", semobj);
 	} catch (err) {
 	    return [false, null, "error in .fmt specifcation " + err.message];
 	}
