@@ -138,6 +138,7 @@ _ruleEnter ("rewriteString");
 var sb = _sb._glue ();
 var cs = _cs._glue ().join ('');
 var se = _se._glue ();
+var ws = _ws._glue ();
 var _result = `return \`${cs}\`;`; 
 _ruleExit ("rewriteString");
 return _result; 
