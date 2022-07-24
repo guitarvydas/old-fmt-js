@@ -188,7 +188,13 @@ return _result;
 },
 
     ////
-    
+
+
+// Param_plus [name k] = [[\nvar ${name} = _${name}._glue ().join ('');]]
+// Param_star [name k] = [[\nvar ${name} = _${name}._glue ().join ('');]]
+// Param_opt [name k] = [\nvar ${name} = _${name}._glue ().join ('');]]
+// Param_flat [name] = [[\nvar ${name} = _${name}._glue ();]]
+
 Param_plus : function (_name,_k) { 
 _ruleEnter ("Param_plus");
 
@@ -227,7 +233,8 @@ var _result = `\nvar ${name} = _${name}._glue ();`;
 _ruleExit ("Param_flat");
 return _result; 
 },
-            
+    ////
+
 _terminal: function () { return this.sourceString; },
     _iter: function (...children) { return children.map(c => c._glue ()); },
 spaces: function (x) { return this.sourceString; },
