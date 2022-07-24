@@ -36,12 +36,9 @@ FMT {
 top = rule+
 rule = applySyntactic<RuleLHS> spaces "=" spaces rewriteString
 RuleLHS = name "[" Param+ "]"
-rewriteString = stringBegin char* stringEnd spaces
-stringBegin = "‛" | "[["
-stringEnd = "’" | "]]"
+rewriteString = "‛" char* "’" spaces
 char =
   | "«" name "»" -- eval
-  | "$" name     -- evalShorthand
   | ~"’" ~"]]" any     -- raw
 name = letter nameRest*
 nameRest = "_" | alnum
@@ -71,6 +68,7 @@ var varNameStack = [];
 
 const semObject = {
 
+
 //     top [@rule] = [[const semObject = {
 // ${rule}{}
 // };
@@ -88,7 +86,14 @@ ${rule}{}
 	return _result; 
     },
 
-            
+    ////
+    
+// rule [lhs ws1 keq ws2 rws] = [[${lhs}${rws}
+// _ruleExit ("${getRuleName ()}");
+// }
+// ]]
+
+
 rule : function (_lhs,_ws1,_keq,_ws2,_rws) { 
 _ruleEnter ("rule");
 
@@ -99,12 +104,15 @@ var ws2 = _ws2._glue ();
 var rws = _rws._glue ();
 var _result = `${lhs}${rws}
 _ruleExit ("${getRuleName ()}");
-},
+}
 `; 
 _ruleExit ("rule");
 return _result; 
 },
-            
+    ////
+    
+// RuleLHS [name lb @Params rb] = [[${name}: function () {\n_ruleEnter ("${name}");${setRuleName (name)}${Params},
+// ]]
 RuleLHS : function (_name,_lb,_Params,_rb) { 
 _ruleEnter ("RuleLHS");
 
@@ -112,11 +120,13 @@ var name = _name._glue ();
 var lb = _lb._glue ();
 var Params = _Params._glue ().join ('');
 var rb = _rb._glue ();
-var _result = `${name}: function (${extractFormals (Params)}) {\n_ruleEnter ("${name}");${setRuleName (name)}${Params}
+var _result = `${name}: function () {\n_ruleEnter ("${name}");${setRuleName (name)}${Params},
 `; 
 _ruleExit ("RuleLHS");
 return _result; 
 },
+            
+    ////
             
     rewriteString : function (_sb,_cs,_se, _ws) { 
 _ruleEnter ("rewriteString");
@@ -129,24 +139,6 @@ _ruleExit ("rewriteString");
 return _result; 
 },
             
-stringBegin : function (_c) { 
-_ruleEnter ("stringBegin");
-
-var c = _c._glue ();
-var _result = ``; 
-_ruleExit ("stringBegin");
-return _result; 
-},
-            
-stringEnd : function (_c) { 
-_ruleEnter ("stringEnd");
-
-var c = _c._glue ();
-var _result = ``; 
-_ruleExit ("stringEnd");
-return _result; 
-},
-            
 char_eval : function (_lb,_name,_rb) { 
 _ruleEnter ("char_eval");
 
@@ -155,16 +147,6 @@ var name = _name._glue ();
 var rb = _rb._glue ();
 var _result = `\$\{${name}\}`; 
 _ruleExit ("char_eval");
-return _result; 
-},
-            
-char_evalShorthand : function (_k,_name) { 
-_ruleEnter ("char_evalShorthand");
-
-var k = _k._glue ();
-var name = _name._glue ();
-var _result = `\$\{${name}\}`; 
-_ruleExit ("char_evalShorthand");
 return _result; 
 },
             
