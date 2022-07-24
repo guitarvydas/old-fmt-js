@@ -59,7 +59,13 @@ Param =
 `;
 
 function extractFormals (s) {
-    return s.replace (/var.*= /g,'').replace (/\._.*$/g,', ');
+    var s0 = s
+	.replace (/\n/g,',')
+	.replace (/var [A-Za-z0-9_]+ = /g,'')
+	.replace (/\._[^;]+;/g,'')
+	.replace (/,/,'')
+    ;
+    return s0;
 }
 
 var varNameStack = [];
