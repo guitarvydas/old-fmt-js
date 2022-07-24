@@ -46,5 +46,12 @@ The output Javascript is not neatly formatted.  I emphasize machine-readabilit-w
 
 Human readability can be achieved by grinding the output through a pretty-printer (I currently use emacs' "indent-region" command).
 
+# Other Languages, C++, Python, Rust, JSON, Etc
+Ohm-JS and Fmt-JS happen to be written in Javascript, but, they implement an new DSL (an SCN for parsing).
+
+It should be possible to generate code for any other textual language using Ohm-JS and Fmt-JS.
+
+(In fact, I have generated Python and JSON and Common Lisp code using Ohm-JS).
+
 # Contrib
 I would enjoy handing this off to anyone who wants to clean it up and make it distributable.

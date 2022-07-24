@@ -38,25 +38,19 @@
 
     <script>
 
-      const src = String.raw`
-abc
-`;
+      const src = String.raw`a`;
       
       const testgrammar = String.raw`
 Test {
-Main = A B C
+Main = A
 A = "a"
-B = "b"
-C = "c"
 }
 `;
 
       const testfmt = String.raw`
 Test {
-Aain [A B C] = ‛«A»«B»«C»’
+Main [A] = ‛«A»’
 A [k] = ‛«k»’
-B [k] = ‛«k»’
-C [k] = ‛«k»’
 }
 `;
 
