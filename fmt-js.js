@@ -36,9 +36,7 @@ FMT {
 top = rule+
 rule = applySyntactic<RuleLHS> spaces "=" spaces rewriteString
 RuleLHS = name "[" Param+ "]"
-rewriteString = stringBegin char* stringEnd spaces
-stringBegin = "‛" | "[["
-stringEnd = "’" | "]]"
+rewriteString = "‛" char* "’" spaces
 char =
   | "«" name "»" -- eval
   | "$" name     -- evalShorthand
@@ -139,24 +137,6 @@ var cs = _cs._glue ().join ('');
 var se = _se._glue ();
 var _result = `return \`${cs}\`;`; 
 _ruleExit ("rewriteString");
-return _result; 
-},
-            
-stringBegin : function (_c) { 
-_ruleEnter ("stringBegin");
-
-var c = _c._glue ();
-var _result = ``; 
-_ruleExit ("stringBegin");
-return _result; 
-},
-            
-stringEnd : function (_c) { 
-_ruleEnter ("stringEnd");
-
-var c = _c._glue ();
-var _result = ``; 
-_ruleExit ("stringEnd");
 return _result; 
 },
             
