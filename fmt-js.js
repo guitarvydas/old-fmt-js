@@ -85,7 +85,7 @@ const semObject = {
 	var rb = _rb._fmt ();
 	var ws3 = _ws3._fmt ();
 	var _result = `{
-${rule}_ : false
+${rule}
 }
 `;
 	_ruleExit ("top");
