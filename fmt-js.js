@@ -50,6 +50,8 @@ Param =
   | name "*" -- star
   | name "?" -- opt
   | name     -- flat
+comment = "//" (~"\n" any)* "\n"
+space += comment
 }
 `;
 
