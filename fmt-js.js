@@ -144,6 +144,8 @@ return _result;
 
 
     ////
+// char_eval [lb name rb] = [[\$\{${name}\}]]
+// char_raw [c] = [[${c}]]
 char_eval : function (_lb,_name,_rb) { 
 _ruleEnter ("char_eval");
 
