@@ -12,6 +12,11 @@ textarea {
 
 <button onclick="generate ()">Generate JavaScript from FMT specification</button>
 <br>
+<button onclick="usesmalltest ()">Use small test.</button>
+<button onclick="usesmalltest2 ()">Use small test 2.</button>
+<button onclick="usesmalltest3 ()">Use small test 3.</button>
+<button onclick="usebigtest ()">Use big test.</button>
+<br>
 
 <p>source:</p>
 <textarea id="src" rows="17" cols="90" placeholder="src" style="background-color:oldlace;">
@@ -105,12 +110,21 @@ NonemptyListOf [x xs+ cs+] = ‛«x»«xs»«cs»’
 `;
 
 
-  var src = smallsrc;
-
-
+  function usesmalltest () {
+      document.getElementById('src').innerHTML = smallsrc;
+  }
+  function usesmalltest2 () {
+      document.getElementById('src').innerHTML = smallsrc2;
+  }
+  function usesmalltest3 () {
+      document.getElementById('src').innerHTML = smallsrc3;
+  }
+  function usebigtest () {
+      document.getElementById('src').innerHTML = bigsrc;
+  }
   
   function generate () {
-      document.getElementById('src').innerHTML = src;
+      var src = document.getElementById('src').innerHTML;
       try {
           let [success, transpiled] = fmtjs (src);
           document.getElementById('output').value = transpiled;
