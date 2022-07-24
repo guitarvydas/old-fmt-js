@@ -112,8 +112,8 @@ NonemptyListOf [x xs+ cs+] = ‛«x»«xs»«cs»’
   function generate () {
       document.getElementById('src').innerHTML = src;
       try {
-          let [success, expanded] = fmtjs (src);
-          document.getElementById('output').value = expanded;
+          let [success, transpiled] = fmtjs (src);
+          document.getElementById('output').value = transpiled;
           if (success) {
               document.getElementById('status').innerHTML = "OK";
           } else {
